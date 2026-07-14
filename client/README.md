@@ -1,16 +1,21 @@
-# React + Vite
+# Loose Ends 🦆
 
-This template provides a minimal setup to get React working in Vite with HMR and some Oxlint rules.
+A rubber-duck thinking partner that remembers where you left off.
 
-Currently, two official plugins are available:
+🔗 **Live app:** https://loose-ends-yc93.vercel.app/
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## What it does
+Start a "thread" whenever you're stuck on something — a bug, a decision, a half-formed idea. Loose Ends asks clarifying questions to help you think it through (instead of just handing over answers), and remembers your progress across sessions so you never lose context.
 
-## React Compiler
+## Features
+- Persistent memory across sessions with AI-generated recaps
+- Tags, pinning, search
+- Follow-up loop: checks back in on resolved threads to see if they actually worked out
+- Voice input, stats dashboard, custom Y2K theming, drag-and-drop stickers
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
-
-## Expanding the Oxlint configuration
-
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and Oxlint's TypeScript related rules in your project.
+## Tech stack
+- Frontend: React + Vite
+- Backend: Node.js + Express
+- AI: Groq API (GPT-OSS 120B)
+- Storage: JSON file
+- Deployed on Render (backend) + Vercel (frontend)
