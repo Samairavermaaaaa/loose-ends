@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 
-const API = 'http://localhost:3001';
+const API = 'https://loose-ends-backend.onrender.com';
 const STALE_MS = 5 * 60 * 1000;
 const FOLLOWUP_MS = 2 * 60 * 1000;
 const STICKER_OPTIONS = ['🦋', '⭐', '💖', '✨', '🌸', '🎀', '💫', '🌷'];
