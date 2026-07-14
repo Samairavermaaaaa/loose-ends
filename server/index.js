@@ -99,6 +99,7 @@ app.post('/threads/:id/message', async (req, res) => {
       body: JSON.stringify({ model: 'openai/gpt-oss-120b', messages: groqMessages })
     });
     const data = await response.json();
+    console.log('GROQ RESPONSE:', JSON.stringify(data));
     const reply = data.choices?.[0]?.message?.content || 'No response';
     thread.messages.push({ role: 'assistant', content: reply });
     thread.updatedAt = Date.now();
