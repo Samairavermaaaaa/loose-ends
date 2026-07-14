@@ -96,7 +96,7 @@ app.post('/threads/:id/message', async (req, res) => {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
-      body: JSON.stringify({ model: 'llama-3.3-70b-versatile', messages: groqMessages })
+      body: JSON.stringify({ model: 'openai/gpt-oss-120b', messages: groqMessages })
     });
     const data = await response.json();
     const reply = data.choices?.[0]?.message?.content || 'No response';
@@ -128,7 +128,7 @@ app.post('/threads/:id/wrapup', async (req, res) => {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         messages: [{ role: 'system', content: sys }, { role: 'user', content: transcript }]
       })
     });
@@ -147,10 +147,9 @@ app.post('/threads/:id/wrapup', async (req, res) => {
   }
 });
 
-// NEW: follow-up on a resolved thread
 app.post('/threads/:id/followup', async (req, res) => {
   const { id } = req.params;
-  const { answer } = req.body; // e.g. "yes it worked" or "no, still bugs me"
+  const { answer } = req.body;
   const threads = readThreads();
   const thread = threads.find(t => t.id === id);
   if (!thread) return res.status(404).json({ error: 'Thread not found' });
@@ -165,7 +164,7 @@ app.post('/threads/:id/followup', async (req, res) => {
         'Authorization': `Bearer ${process.env.GROQ_API_KEY}`
       },
       body: JSON.stringify({
-        model: 'llama-3.3-70b-versatile',
+        model: 'openai/gpt-oss-120b',
         messages: [{ role: 'system', content: sys }, { role: 'user', content: answer }]
       })
     });
