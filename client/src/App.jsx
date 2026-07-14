@@ -3,6 +3,7 @@ import { useState, useEffect, useRef } from 'react';
 const API = 'http://localhost:3001';
 const STALE_MS = 5 * 60 * 1000;
 const FOLLOWUP_MS = 2 * 60 * 1000;
+const STICKER_OPTIONS = ['🦋', '⭐', '💖', '✨', '🌸', '🎀', '💫', '🌷'];
 
 function App() {
   const [threads, setThreads] = useState([]);
@@ -18,13 +19,73 @@ function App() {
   const [showStats, setShowStats] = useState(false);
   const [listening, setListening] = useState(false);
   const [followupTarget, setFollowupTarget] = useState(null);
+  const [stickers, setStickers] = useState(() => {
+    try {
+      const saved = localStorage.getItem('loose-ends-stickers');
+      return saved ? JSON.parse(saved) : [];
+    } catch { return []; }
+  });
+  const [draggingId, setDraggingId] = useState(null);
   const recognitionRef = useRef(null);
+  const dragOffset = useRef({ x: 0, y: 0 });
 
   useEffect(() => { loadThreads(); }, []);
   useEffect(() => {
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('loose-ends-theme', theme);
   }, [theme]);
+  useEffect(() => {
+    localStorage.setItem('loose-ends-stickers', JSON.stringify(stickers));
+  }, [stickers]);
+
+  useEffect(() => {
+    if (!draggingId) return;
+    const handleMove = (e) => {
+      const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+      const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+      setStickers(function(prev) {
+        return prev.map(function(s) {
+          if (s.id !== draggingId) return s;
+          return { ...s, x: clientX - dragOffset.current.x, y: clientY - dragOffset.current.y };
+        });
+      });
+    };
+    const handleUp = () => setDraggingId(null);
+    window.addEventListener('mousemove', handleMove);
+    window.addEventListener('mouseup', handleUp);
+    window.addEventListener('touchmove', handleMove);
+    window.addEventListener('touchend', handleUp);
+    return () => {
+      window.removeEventListener('mousemove', handleMove);
+      window.removeEventListener('mouseup', handleUp);
+      window.removeEventListener('touchmove', handleMove);
+      window.removeEventListener('touchend', handleUp);
+    };
+  }, [draggingId]);
+
+  const addSticker = (emoji) => {
+    const id = Date.now().toString() + Math.random().toString(36).slice(2, 6);
+    const x = 100 + Math.random() * (window.innerWidth - 200);
+    const y = 100 + Math.random() * (window.innerHeight - 300);
+    setStickers(function(prev) { return [...prev, { id, emoji, x, y }]; });
+  };
+
+  const startDrag = (id, e) => {
+    e.preventDefault();
+    const clientX = e.touches ? e.touches[0].clientX : e.clientX;
+    const clientY = e.touches ? e.touches[0].clientY : e.clientY;
+    const sticker = stickers.find(function(s) { return s.id === id; });
+    dragOffset.current = { x: clientX - sticker.x, y: clientY - sticker.y };
+    setDraggingId(id);
+  };
+
+  const removeSticker = (id) => {
+    setStickers(function(prev) { return prev.filter(function(s) { return s.id !== id; }); });
+  };
+
+  const clearStickers = () => {
+    if (window.confirm('Remove all stickers?')) setStickers([]);
+  };
 
   const loadThreads = async () => {
     const res = await fetch(`${API}/threads`);
@@ -189,9 +250,36 @@ function App() {
       return b.updatedAt - a.updatedAt;
     });
 
+  const StickerLayer = (
+    <>
+      {stickers.map(function(s) {
+        return (
+          <div
+            key={s.id}
+            className="placed-sticker"
+            style={{ left: s.x, top: s.y }}
+            onMouseDown={(e) => startDrag(s.id, e)}
+            onTouchStart={(e) => startDrag(s.id, e)}
+            onDoubleClick={() => removeSticker(s.id)}
+            title="Drag to move, double-click to remove"
+          >
+            {s.emoji}
+          </div>
+        );
+      })}
+      <div className="sticker-tray">
+        {STICKER_OPTIONS.map(function(emoji) {
+          return <button key={emoji} onClick={() => addSticker(emoji)}>{emoji}</button>;
+        })}
+        {stickers.length > 0 && <button className="clear-btn" onClick={clearStickers}>clear all</button>}
+      </div>
+    </>
+  );
+
   if (currentThread) {
     return (
       <div className="app">
+        {StickerLayer}
         <div className="back-row">
           <button className="back-btn" onClick={() => setCurrentId(null)}>&larr; all threads</button>
           <button className="export-btn" onClick={() => exportThread(currentThread)}>Export</button>
@@ -238,6 +326,7 @@ function App() {
   if (showStats) {
     return (
       <div className="app">
+        {StickerLayer}
         <div className="back-row">
           <button className="back-btn" onClick={() => setShowStats(false)}>&larr; all threads</button>
         </div>
@@ -282,6 +371,7 @@ function App() {
 
   return (
     <div className="app">
+      {StickerLayer}
       <div className="topbar">
         <div>
           <h1 className="brand">Loose <span>Ends</span></h1>

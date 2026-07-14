@@ -26,20 +26,29 @@
 *{box-sizing:border-box;}
 body{
   margin:0;
+  position:relative;
   background-color:var(--bg-grad-2);
   background-image:
     radial-gradient(circle at 15% 10%, var(--bg-grad-1), transparent 55%),
     radial-gradient(circle at 85% 80%, var(--bg-grad-3), transparent 55%),
-    linear-gradient(160deg, var(--bg-grad-1), var(--bg-grad-2) 50%, var(--bg-grad-3)),
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cg fill='none' stroke='%23F5C518' stroke-width='2.5' stroke-opacity='0.55'%3E%3Cpath d='M20,150 Q60,60 150,80 Q240,100 260,180 Q270,230 210,250'/%3E%3Ccircle cx='210' cy='250' r='5' fill='%23F5C518' fill-opacity='0.55' stroke='none'/%3E%3Cpath d='M40,240 Q90,210 120,250 Q140,280 100,300'/%3E%3Ccircle cx='100' cy='300' r='4' fill='%23F5C518' fill-opacity='0.55' stroke='none'/%3E%3C/g%3E%3Cg fill='%23ffffff' fill-opacity='0.5'%3E%3Cpath d='M260,40 c0,-8 -8,-8 -10,-2 c-2,-6 -10,-6 -10,2 c0,7 10,14 10,14 c0,0 10,-7 10,-14 Z'/%3E%3Cpath d='M60,180 c0,-6 -6,-6 -7.5,-1.5 c-1.5,-4.5 -7.5,-4.5 -7.5,1.5 c0,5 7.5,10 7.5,10 c0,0 7.5,-5 7.5,-10 Z'/%3E%3C/g%3E%3C/svg%3E");
-  background-repeat:repeat, repeat, no-repeat, repeat;
+    linear-gradient(160deg, var(--bg-grad-1), var(--bg-grad-2) 50%, var(--bg-grad-3));
   background-attachment:fixed;
-  background-size:auto, auto, auto, 320px 320px;
   color:var(--text-primary);
   font-family:'Inter',sans-serif;
   min-height:100vh;
 }
-.app{max-width:640px;margin:0 auto;padding:40px 24px 80px;}
+body::before{
+  content:"";
+  position:fixed;
+  inset:0;
+  z-index:0;
+  pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='320' height='320'%3E%3Cg fill='none' stroke='%23F5C518' stroke-width='3'%3E%3Cpath d='M20,150 Q60,60 150,80 Q240,100 260,180 Q270,230 210,250'/%3E%3Ccircle cx='210' cy='250' r='6' fill='%23F5C518' stroke='none'/%3E%3Cpath d='M40,240 Q90,210 120,250 Q140,280 100,300'/%3E%3Ccircle cx='100' cy='300' r='5' fill='%23F5C518' stroke='none'/%3E%3C/g%3E%3Cg fill='%23ffffff'%3E%3Cpath d='M260,40 c0,-9 -9,-9 -11,-2 c-2,-7 -11,-7 -11,2 c0,8 11,16 11,16 c0,0 11,-8 11,-16 Z'/%3E%3Cpath d='M60,180 c0,-7 -7,-7 -8.5,-1.5 c-1.5,-5.5 -8.5,-5.5 -8.5,1.5 c0,6 8.5,12 8.5,12 c0,0 8.5,-6 8.5,-12 Z'/%3E%3C/g%3E%3C/svg%3E");
+  background-repeat:repeat;
+  background-size:320px 320px;
+  opacity:0.55;
+}
+.app{position:relative;z-index:1;max-width:640px;margin:0 auto;padding:40px 24px 80px;}
 .topbar{display:flex;justify-content:space-between;align-items:flex-start;}
 .topbar-actions{display:flex;gap:8px;}
 .brand{font-family:'Fraunces',serif;font-weight:600;font-size:32px;margin:0;color:var(--accent-magenta);text-shadow:0 1px 0 #fff, 0 2px 4px rgba(194,24,91,.25);}
@@ -189,3 +198,24 @@ body{
 .tag-bar-track{flex:1;background:var(--card-bg-2);border-radius:20px;height:9px;overflow:hidden;}
 .tag-bar-fill{background:linear-gradient(90deg, var(--accent-hotpink), var(--accent-yellow));height:100%;}
 .section-label{font-family:'IBM Plex Mono',monospace;font-size:11px;text-transform:uppercase;color:var(--accent-magenta);margin:24px 0 12px;letter-spacing:.05em;font-weight:700;}
+.sticker-tray{
+  position:fixed;bottom:0;left:0;right:0;z-index:50;
+  background:rgba(255,255,255,.75);backdrop-filter:blur(6px);
+  border-top:2px solid var(--accent-hotpink);
+  display:flex;justify-content:center;gap:6px;padding:10px;flex-wrap:wrap;
+}
+.sticker-tray button{
+  background:var(--card-bg);border:1px solid var(--card-bg-2);border-radius:50%;
+  width:38px;height:38px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;
+}
+.sticker-tray button:hover{background:var(--accent-yellow);transform:scale(1.1);}
+.sticker-tray .clear-btn{
+  width:auto;border-radius:20px;padding:0 12px;font-size:11px;font-family:'IBM Plex Mono',monospace;
+  color:var(--accent-magenta);border-color:var(--accent-hotpink);
+}
+.placed-sticker{
+  position:fixed;font-size:34px;cursor:grab;z-index:40;user-select:none;
+  filter:drop-shadow(0 2px 4px rgba(0,0,0,.25));
+  touch-action:none;
+}
+.placed-sticker:active{cursor:grabbing;}
